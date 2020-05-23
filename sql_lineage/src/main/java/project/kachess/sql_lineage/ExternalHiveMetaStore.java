@@ -20,8 +20,7 @@ public class ExternalHiveMetaStore extends MetaDataService {
   /**
    * Given a table name, find all the columns in the external source and generate insert statement
    */
-  public List<String> generateSelectItemInserts(
-      Long tabObjId, String idbName, String itabName) {
+  public List<String> generateSelectItemInserts(Long tabObjId, String idbName, String itabName) {
     List<String> retVal = new ArrayList<>();
     String tabName = itabName.toLowerCase(), dbName = idbName.toLowerCase();
     try {
@@ -63,7 +62,7 @@ public class ExternalHiveMetaStore extends MetaDataService {
                 currColName,
                 currColType,
                 rowCnt + 1);
-        if (rowCnt %BATCH_SIZE > 0) {
+        if (rowCnt % BATCH_SIZE > 0) {
           insertQry.append(',');
         }
         insertQry.append(tmpVal);
