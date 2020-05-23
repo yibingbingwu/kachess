@@ -1,0 +1,4 @@
+- Remove references/usage of "dashboard or tinyspeck"
+- Add Flyway
+- Add Annotation
+- Revamp BNF

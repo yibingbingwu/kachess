@@ -7,8 +7,8 @@ import project.kachess.sql_lineage.util.AutoIncrement;
 import project.kachess.sql_lineage.util.FunctionAssesser;
 import project.kachess.sql_lineage.util.MetaDataNotFound;
 import project.kachess.sql_lineage.util.MiscChores;
-import project.kachess.sqlparser.g4generated.HqlsqlBaseVisitor;
-import project.kachess.sqlparser.g4generated.HqlsqlParser;
+import project.kachess.sqlparser.g4generated.BingqlBaseVisitor;
+import project.kachess.sqlparser.g4generated.BingqlParser;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -27,7 +27,7 @@ import static org.junit.Assert.assertTrue;
  * <p>This class may get messy as we learn more about SQL metadata. Need to keep an eye out on
  * delegation
  */
-public class SqlMetaDataExtractor extends HqlsqlBaseVisitor<Void> {
+public class SqlMetaDataExtractor extends BingqlBaseVisitor<Void> {
   static final String SYS_AIRFLOW = "airflow";
   static final String SYS_DASHBOARD = "dashboard";
 
@@ -112,20 +112,20 @@ public class SqlMetaDataExtractor extends HqlsqlBaseVisitor<Void> {
   }
 
   @Override
-  public Void visitProgram(HqlsqlParser.ProgramContext ctx) {
+  public Void visitProgram(BingqlParser.ProgramContext ctx) {
     assertNotNull(jobContext);
     super.visitProgram(ctx);
     return null;
   }
 
   @Override
-  public Void visitUse_stmt(HqlsqlParser.Use_stmtContext ctx) {
+  public Void visitUse_stmt(BingqlParser.Use_stmtContext ctx) {
     jobContext.setCurrentSchema(ctx.getChild(1).getText());
     return null;
   }
 
   @Override
-  public Void visitStmt(HqlsqlParser.StmtContext ctx) {
+  public Void visitStmt(BingqlParser.StmtContext ctx) {
     // Actually not quite sure if this is the correct, keep for legacy -- DataSet Magazine should be
     // within SELECT but not every Statement:
     dsListMagzine.push(new DatasetList());
@@ -136,8 +136,8 @@ public class SqlMetaDataExtractor extends HqlsqlBaseVisitor<Void> {
     // A stronger statement should be: assert(dsListMagzine.size() == 1)
     // Except I don't have time to troubleshoot all the cases now ...
     while (!dsListMagzine.empty()) {
-      DatasetList dsObjs= dsListMagzine.pop();
-      for (DatasetWrapper adsw: dsObjs) {
+      DatasetList dsObjs = dsListMagzine.pop();
+      for (DatasetWrapper adsw : dsObjs) {
         adsw.dsObj.saveToDb();
       }
     }
@@ -153,7 +153,7 @@ public class SqlMetaDataExtractor extends HqlsqlBaseVisitor<Void> {
    * well
    */
   @Override
-  public Void visitBasic_select_stmt(HqlsqlParser.Basic_select_stmtContext ctx) {
+  public Void visitBasic_select_stmt(BingqlParser.Basic_select_stmtContext ctx) {
     dsListMagzine.push(new DatasetList());
 
     super.visitBasic_select_stmt(ctx);
@@ -181,14 +181,14 @@ public class SqlMetaDataExtractor extends HqlsqlBaseVisitor<Void> {
    * Stack
    */
   @Override
-  public Void visitSelect_list(HqlsqlParser.Select_listContext ctx) {
+  public Void visitSelect_list(BingqlParser.Select_listContext ctx) {
     colListMagzine.push(new ArrayList<>());
     super.visitSelect_list(ctx);
     return null;
   }
 
   @Override
-  public Void visitSelect_list_asterisk(HqlsqlParser.Select_list_asteriskContext ctx) {
+  public Void visitSelect_list_asterisk(BingqlParser.Select_list_asteriskContext ctx) {
     Long nextId = AutoIncrement.nextId();
     colListMagzine
         .peek()
@@ -214,7 +214,7 @@ public class SqlMetaDataExtractor extends HqlsqlBaseVisitor<Void> {
   }
 
   @Override
-  public Void visitSelect_list_no_asterisk(HqlsqlParser.Select_list_no_asteriskContext ctx) {
+  public Void visitSelect_list_no_asterisk(BingqlParser.Select_list_no_asteriskContext ctx) {
     // This is a new list_item
     String alias = Util.removeQuotes(MiscChores.extractRealAlias(ctx.select_list_alias()));
     int stopPt = (alias == null) ? 0 : ctx.select_list_alias().start.getStartIndex() - 1;
@@ -266,7 +266,7 @@ public class SqlMetaDataExtractor extends HqlsqlBaseVisitor<Void> {
         // Is this a simple column reference? Then there should be one first grandchild and has to
         // be of ColNameInExprContext type
         if (firstLevelChildCtx.getChildCount() == 1
-            && firstLevelChildCtx.getChild(0) instanceof HqlsqlParser.ColNameInExprContext) {
+            && firstLevelChildCtx.getChild(0) instanceof BingqlParser.ColNameInExprContext) {
           isSimpleCol = Boolean.TRUE;
           patternFound = true;
         }
@@ -300,7 +300,7 @@ public class SqlMetaDataExtractor extends HqlsqlBaseVisitor<Void> {
   }
 
   @Override
-  public Void visitWhere_clause(HqlsqlParser.Where_clauseContext ctx) {
+  public Void visitWhere_clause(BingqlParser.Where_clauseContext ctx) {
     String cleanedTxt = MiscChores.getOriginalText(ctx.bool_expr(), 0, CONS_COL_DEF_MAXLEN);
     Long nextId = AutoIncrement.nextId();
     colListMagzine
@@ -327,7 +327,7 @@ public class SqlMetaDataExtractor extends HqlsqlBaseVisitor<Void> {
   }
 
   @Override
-  public Void visitFrom_join_clause(HqlsqlParser.From_join_clauseContext ctx) {
+  public Void visitFrom_join_clause(BingqlParser.From_join_clauseContext ctx) {
     if (ctx.bool_expr() == null) {
       // The JOIN conditions are represented in the WHERE clause in this case (i.e. a comma
       // separated table list)
@@ -364,7 +364,7 @@ public class SqlMetaDataExtractor extends HqlsqlBaseVisitor<Void> {
    * list_item
    */
   @Override
-  public Void visitColNameInExpr(HqlsqlParser.ColNameInExprContext ctx) {
+  public Void visitColNameInExpr(BingqlParser.ColNameInExprContext ctx) {
     // Unknown origin, ignore
     if (colListMagzine.empty()) {
       return super.visitColNameInExpr(ctx);
@@ -373,8 +373,8 @@ public class SqlMetaDataExtractor extends HqlsqlBaseVisitor<Void> {
     // Ignore ORDER BY, GROUP BY columns
     if (MiscChores.hasClassInAncestry(
         ctx,
-        HqlsqlParser.Order_by_clauseContext.class,
-        HqlsqlParser.Group_by_clauseContext.class)) {
+        BingqlParser.Order_by_clauseContext.class,
+        BingqlParser.Group_by_clauseContext.class)) {
       return super.visitColNameInExpr(ctx);
     }
 
@@ -407,10 +407,10 @@ public class SqlMetaDataExtractor extends HqlsqlBaseVisitor<Void> {
   }
 
   @Override
-  public Void visitGroup_by_columns(HqlsqlParser.Group_by_columnsContext ctx) {
+  public Void visitGroup_by_columns(BingqlParser.Group_by_columnsContext ctx) {
     List<SelectItem> currSelList = colListMagzine.peek();
     for (ParseTree cnode : ctx.children) {
-      if (!(cnode instanceof HqlsqlParser.ExprContext)) {
+      if (!(cnode instanceof BingqlParser.ExprContext)) {
         continue;
       }
       String rawDef = cnode.getText();
@@ -428,7 +428,7 @@ public class SqlMetaDataExtractor extends HqlsqlBaseVisitor<Void> {
   }
 
   @Override
-  public Void visitExpr_func_param_any(HqlsqlParser.Expr_func_param_anyContext ctx) {
+  public Void visitExpr_func_param_any(BingqlParser.Expr_func_param_anyContext ctx) {
     // Unknown origin, ignore
     if (colListMagzine.empty()) {
       return super.visitExpr_func_param_any(ctx);
@@ -462,7 +462,7 @@ public class SqlMetaDataExtractor extends HqlsqlBaseVisitor<Void> {
   }
 
   @Override
-  public Void visitExpr(HqlsqlParser.ExprContext ctx) {
+  public Void visitExpr(BingqlParser.ExprContext ctx) {
     Void retval = super.visitExpr(ctx);
     // Specifically to deal with the function(a, b).col1 situation
     // This is delaying schema resolution at runtime. fk stupid
@@ -491,7 +491,7 @@ public class SqlMetaDataExtractor extends HqlsqlBaseVisitor<Void> {
    * the Dataset
    */
   @Override
-  public Void visitFrom_table_name_clause(HqlsqlParser.From_table_name_clauseContext ctx) {
+  public Void visitFrom_table_name_clause(BingqlParser.From_table_name_clauseContext ctx) {
     super.visitFrom_table_name_clause(ctx);
     TableNameWrangler tabNamer =
         new TableNameWrangler(ctx.getChild(0).getText(), jobContext.getCurrentSchema());
@@ -518,7 +518,7 @@ public class SqlMetaDataExtractor extends HqlsqlBaseVisitor<Void> {
 
   /** Select * from (subquery) as tab0 => assign tab0 to the dataset for the subquery */
   @Override
-  public Void visitFrom_subselect_clause(HqlsqlParser.From_subselect_clauseContext ctx) {
+  public Void visitFrom_subselect_clause(BingqlParser.From_subselect_clauseContext ctx) {
     super.visitFrom_subselect_clause(ctx);
     String alias = MiscChores.extractRealAlias(ctx.from_alias_clause());
     if (alias != null) {
@@ -529,7 +529,7 @@ public class SqlMetaDataExtractor extends HqlsqlBaseVisitor<Void> {
   }
 
   @Override
-  public Void visitFrom_cross_join_clause(HqlsqlParser.From_cross_join_clauseContext ctx) {
+  public Void visitFrom_cross_join_clause(BingqlParser.From_cross_join_clauseContext ctx) {
     super.visitFrom_cross_join_clause(ctx);
     try {
       List<DatasetWrapper> topList = dsListMagzine.peek();
@@ -541,7 +541,7 @@ public class SqlMetaDataExtractor extends HqlsqlBaseVisitor<Void> {
   }
 
   @Override
-  public Void visitCte_select_stmt_item(HqlsqlParser.Cte_select_stmt_itemContext ctx) {
+  public Void visitCte_select_stmt_item(BingqlParser.Cte_select_stmt_itemContext ctx) {
     dsListMagzine.push(new DatasetList());
     super.visitCte_select_stmt_item(ctx);
     String cteName = ctx.ident().getText();
@@ -557,7 +557,7 @@ public class SqlMetaDataExtractor extends HqlsqlBaseVisitor<Void> {
   }
 
   @Override
-  public Void visitFullselect_set_clause(HqlsqlParser.Fullselect_set_clauseContext ctx) {
+  public Void visitFullselect_set_clause(BingqlParser.Fullselect_set_clauseContext ctx) {
     super.visitFullselect_set_clause(ctx);
     String rawTxt = ctx.getChild(0).getText();
     if (rawTxt != null && rawTxt.equalsIgnoreCase("UNION")) {
@@ -567,7 +567,7 @@ public class SqlMetaDataExtractor extends HqlsqlBaseVisitor<Void> {
   }
 
   @Override
-  public Void visitMultitable_insert_stmt(HqlsqlParser.Multitable_insert_stmtContext ctx) {
+  public Void visitMultitable_insert_stmt(BingqlParser.Multitable_insert_stmtContext ctx) {
     // Setup stack context since in Hive multitable insert is a combo of SELECT and INSERT rules
     // The top level dslistMagzine entry captures a chain of sub-component INSERTs
     isMultiTableInsert = true;
@@ -584,7 +584,7 @@ public class SqlMetaDataExtractor extends HqlsqlBaseVisitor<Void> {
   }
 
   @Override
-  public Void visitInsert_stmt(HqlsqlParser.Insert_stmtContext ctx) {
+  public Void visitInsert_stmt(BingqlParser.Insert_stmtContext ctx) {
     super.visitInsert_stmt(ctx);
 
     // If this is INSERT ... VALUES ..., skip:
@@ -592,7 +592,7 @@ public class SqlMetaDataExtractor extends HqlsqlBaseVisitor<Void> {
       return null;
     }
 
-    HqlsqlParser.Table_nameContext tabNameCtx = ctx.table_name();
+    BingqlParser.Table_nameContext tabNameCtx = ctx.table_name();
     assertNotNull(tabNameCtx);
 
     // Find out table name and breakdown into components:
@@ -611,7 +611,7 @@ public class SqlMetaDataExtractor extends HqlsqlBaseVisitor<Void> {
   }
 
   @Override
-  public Void visitCreate_table_stmt(HqlsqlParser.Create_table_stmtContext ctx) {
+  public Void visitCreate_table_stmt(BingqlParser.Create_table_stmtContext ctx) {
     /**
      * CREATE TABLE should have already been executed, meaning the table should have existed either
      * in Cache or in Metadata. Therefore, will return if it is already found in either source. In
@@ -752,9 +752,9 @@ public class SqlMetaDataExtractor extends HqlsqlBaseVisitor<Void> {
   }
 
   @Override
-  public Void visitCreate_table_columns(HqlsqlParser.Create_table_columnsContext ctx) {
+  public Void visitCreate_table_columns(BingqlParser.Create_table_columnsContext ctx) {
     if (newlyCreatedTable != null) {
-      for (HqlsqlParser.Create_table_columns_itemContext currSubCtx :
+      for (BingqlParser.Create_table_columns_itemContext currSubCtx :
           ctx.create_table_columns_item()) {
         String colName = Util.extractCleanColName(currSubCtx.column_name().ident().getText());
         String colType = null;
@@ -797,10 +797,10 @@ public class SqlMetaDataExtractor extends HqlsqlBaseVisitor<Void> {
    * alias1 as alias and select_items = (col1, col2) In this case, col1, col2 should have params, *
    * as their (shared) parents
    */
-  public Void visitLateral_view_clause(HqlsqlParser.Lateral_view_clauseContext ctx) {
-    List<HqlsqlParser.IdentContext> colNames = ctx.lv_columns().ident();
+  public Void visitLateral_view_clause(BingqlParser.Lateral_view_clauseContext ctx) {
+    List<BingqlParser.IdentContext> colNames = ctx.lv_columns().ident();
     List<SelectItem> newDsItems = new ArrayList<>();
-    for (HqlsqlParser.IdentContext currIdCtx : colNames) {
+    for (BingqlParser.IdentContext currIdCtx : colNames) {
       newDsItems.add(
           new SelectItem(
               dbService,
@@ -846,7 +846,7 @@ public class SqlMetaDataExtractor extends HqlsqlBaseVisitor<Void> {
   }
 
   @Override
-  public Void visitAlter_table_stmt(HqlsqlParser.Alter_table_stmtContext ctx) {
+  public Void visitAlter_table_stmt(BingqlParser.Alter_table_stmtContext ctx) {
     // For now we only care that some alter table add partition will link two tables together
     // For other alter table statements ... we don't care
     if (ctx.alter_table_partition() == null || ctx.alter_table_partition().T_ADD2() == null) {
@@ -869,7 +869,7 @@ public class SqlMetaDataExtractor extends HqlsqlBaseVisitor<Void> {
   }
 
   @Override
-  public Void visitTable_data_loc_clause(HqlsqlParser.Table_data_loc_clauseContext ctx) {
+  public Void visitTable_data_loc_clause(BingqlParser.Table_data_loc_clauseContext ctx) {
     super.visitTable_data_loc_clause(ctx);
     String locStr = Util.removeQuotes(ctx.L_S_STRING().toString());
     if (newlyCreatedTable != null) {
@@ -886,7 +886,7 @@ public class SqlMetaDataExtractor extends HqlsqlBaseVisitor<Void> {
   }
 
   @Override
-  public Void visitDrop_table(HqlsqlParser.Drop_tableContext ctx) {
+  public Void visitDrop_table(BingqlParser.Drop_tableContext ctx) {
     TableNameWrangler tabNamer =
         new TableNameWrangler(ctx.table_name().getText(), jobContext.getCurrentSchema());
     dbService.removeTable(
@@ -973,7 +973,8 @@ public class SqlMetaDataExtractor extends HqlsqlBaseVisitor<Void> {
         // This is the list in the JOIN section
         List<SelectItem> joinColList = dataSetPool.resolveCurrentItem(currTmpCol, nextId, skipCols);
         // The way we handle join is to put all base columns mentioned in the JOIN condition
-        // behind one token SelectItem (the raw_text), then apply them all to every SelectItem after SELECT
+        // behind one token SelectItem (the raw_text), then apply them all to every SelectItem after
+        // SELECT
         if (joinColList != null && joinColList.size() > 0) {
           joinCols.addAll(joinColList.get(0).getParentColumns());
         }
@@ -994,11 +995,11 @@ public class SqlMetaDataExtractor extends HqlsqlBaseVisitor<Void> {
   }
 
   private boolean isAFunction(ParseTree tNode) {
-    return tNode instanceof HqlsqlParser.Expr_agg_window_funcContext
-        || tNode instanceof HqlsqlParser.Expr_funcContext;
+    return tNode instanceof BingqlParser.Expr_agg_window_funcContext
+        || tNode instanceof BingqlParser.Expr_funcContext;
   }
 
-  private boolean startsWithAFunction(HqlsqlParser.ExprContext ctx) {
+  private boolean startsWithAFunction(BingqlParser.ExprContext ctx) {
     ParseTree leftNode = ctx;
     try {
       while ((leftNode = leftNode.getChild(0)) != null) {
@@ -1011,11 +1012,11 @@ public class SqlMetaDataExtractor extends HqlsqlBaseVisitor<Void> {
     return false;
   }
 
-  private boolean matchesArrayOrMap(HqlsqlParser.ExprContext ctx) {
+  private boolean matchesArrayOrMap(BingqlParser.ExprContext ctx) {
     ParseTree leftNode = ctx;
     try {
       while ((leftNode = leftNode.getChild(0)) != null && leftNode.getChildCount() == 2) {
-        if (leftNode.getChild(1) instanceof HqlsqlParser.Expr_map_arrayContext) {
+        if (leftNode.getChild(1) instanceof BingqlParser.Expr_map_arrayContext) {
           return true;
         }
       }

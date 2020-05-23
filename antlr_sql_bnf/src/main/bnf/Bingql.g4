@@ -16,7 +16,7 @@
 */
 
 // HPL/SQL Procedural SQL Extension Grammar
-grammar bingql;
+grammar Bingql;
 
 program : block EOF;
 
