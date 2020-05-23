@@ -2,7 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/antlr_sql_bnf/antlr_sql_bnf.iml" filepath="$PROJECT_DIR$/antlr_sql_bnf/antlr_sql_bnf.iml" />
       <module fileurl="file://$PROJECT_DIR$/kachess.iml" filepath="$PROJECT_DIR$/kachess.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shared/shared.iml" filepath="$PROJECT_DIR$/shared/shared.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sql_lineage/sql_lineage.iml" filepath="$PROJECT_DIR$/sql_lineage/sql_lineage.iml" />
     </modules>
   </component>
 </project>
