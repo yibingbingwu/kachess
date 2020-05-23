@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="shared" />
+        <module name="sql_lineage" />
+        <module name="antlr_sql_bnf" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="antlr_sql_bnf" target="1.8" />
+      <module name="kachess" target="1.8" />
+      <module name="shared" target="1.8" />
+      <module name="sql_lineage" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

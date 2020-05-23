@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>ParserBnf</artifactId>
+        <artifactId>KachessRoot</artifactId>
         <groupId>project.kachess</groupId>
         <version>1.0.0</version>
     </parent>
@@ -12,8 +12,7 @@
     <artifactId>antlr_sql_bnf</artifactId>
     <version>1.0.0</version>
 
-
-    <name>SQL parsing component of the Kachess project</name>
+    <name>antlr_sql_bnf: SQL parsing component of the Kachess project</name>
 
     <properties>
         <antlr4.version>4.7.2</antlr4.version>
@@ -60,7 +59,7 @@
                         <argument>-visitor</argument>
                         <argument>-no-listener</argument>
                     </arguments>
-		    <sourceDirectory>${project.basedir}/src/main/bnf</sourceDirectory>
+                    <sourceDirectory>${project.basedir}/src/main/bnf</sourceDirectory>
                 </configuration>
                 <executions>
                     <execution>
