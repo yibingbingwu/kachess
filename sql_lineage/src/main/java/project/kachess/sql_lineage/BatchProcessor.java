@@ -7,8 +7,8 @@ import project.kachess.shared.DbConnectionBuilder;
 import project.kachess.shared.SyntaxErrorListener;
 import project.kachess.sql_lineage.persistable.SqlDialectType;
 import project.kachess.sql_lineage.util.AutoIncrement;
-import project.kachess.sqlparser.g4generated.HqlsqlLexer;
-import project.kachess.sqlparser.g4generated.HqlsqlParser;
+import project.kachess.sqlparser.g4generated.BingqlLexer;
+import project.kachess.sqlparser.g4generated.BingqlParser;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -242,9 +242,9 @@ class ParsingTask implements Runnable {
         lineageBuilder.initSession(newContext, dbService);
 
         CharStream rawInput = CharStreams.fromFileName(currFile.getCanonicalPath());
-        HqlsqlLexer lexer = new HqlsqlLexer(rawInput);
+        BingqlLexer lexer = new BingqlLexer(rawInput);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
-        HqlsqlParser parser = new HqlsqlParser(tokens);
+        BingqlParser parser = new BingqlParser(tokens);
         parser.removeErrorListeners();
         parser.addErrorListener(SyntaxErrorListener.INSTANCE);
         ParseTree exprTree = parser.program();
