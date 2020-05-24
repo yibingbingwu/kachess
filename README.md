@@ -52,18 +52,25 @@ Project Kachess is designed for Data Engineers working in a Data Warehouse like 
 </details>
 
 So the question really becomes how do you parse SQL?
-<details>
-	<summary> Here are a few alternatives</summary>
-
-- [HiveParser](https://hive.apache.org/javadocs/r2.1.1/api/org/apache/hadoop/hive/ql/parse/HiveParser.html)
-- Uber Engineering's [QueryParser](https://github.com/uber/queryparser)
-- A few commercial options such as [MANTA](https://getmanta.com/), [General SQL Parser](http://www.sqlparser.com/)
-
-I chose to write my own, starting from BNF syntax description, for the following reasons:
-- Flexibility
-- Familiarity
-
-</details>
+- Here are a few alternatives
+    - [HiveParser](https://hive.apache.org/javadocs/r2.1.1/api/org/apache/hadoop/hive/ql/parse/HiveParser.html)
+    - Uber Engineering's [QueryParser](https://github.com/uber/queryparser)
+    - A few commercial options such as [MANTA](https://getmanta.com/), [General SQL Parser](http://www.sqlparser.com/)
+- I chose to write my own, starting from BNF syntax description, for the following reasons:
+    <details>
+    <summary>- Flexibility</summary>
+        - Because we used Hive to create/populate tables but Presto to query them, I need to parse both SQL dialects
+        - In the future, we may need to support other analytical engines such as Redshift or Snowflake
+    </details>
+    - Familiarity
+        - I happen to be an SQL expert who likes to write parsers
+            - I have worked with many flavors of SQL in different settings. Suffice to say there is not a whole lot surprise left when it comes to SQL
+            - I have written two previous machine language parsers. I can find my way around in this field
+        - Although it is challenging to write one syntax that supports multiple SQL dialects, I know this is achievable because:
+            - I am only to extract lineage info, not to build an execution engine
+                - In other words, all I need to parse out from `INSERT INTO table_a AS SELECT * FROM table_b` is that `table_a` is a child of (or downstream from) `table_b`, not to orchestrate a Map/Reduce job
+                - Nor do I need to understand the plethora of platform-specific function (e.g. `date_add` vs. `adddate`): so long I can recognize something is a function, I can grab the parameters and map them to known columns
+            - At the end of the day, achieving a 90% lineage coverage of more than one SQL dialects in our code base is far more valuable then a 99.9% coverage of just one
 
 ## Where does the project stand now
 ## How can I try it out  
