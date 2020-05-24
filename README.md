@@ -42,7 +42,6 @@ Project Kachess is designed for Data Engineers working in a Data Warehouse like 
 ## Why SQL parser  
   
 **To discover data lineage, there is no escape of parsing SQL scripts.**
-<p>
 <details>
     <summary>Here is why ... </summary>  
 
@@ -51,7 +50,6 @@ Project Kachess is designed for Data Engineers working in a Data Warehouse like 
 - What is more, if all the SQL programs follow a coding standard, or conforming to a naming convention, table lookups may be much easier. 
 - However, when you have a legacy code base that is several years old, and you had many turnovers on the team, you may not assume anything
 </details>
-</p>
 
 So the question really becomes how do you parse SQL?
 <details>
