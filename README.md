@@ -60,12 +60,14 @@ So the question really becomes how do you parse SQL?
 In the end, I chose to write my own, starting from BNF syntax description, for the following reasons:
 <details>
 <summary>Flexibility</summary>
+
 - Because we used Hive to create/populate tables but Presto to query them, I need to parse both SQL dialects
 - In the future, we may need to support other analytical engines such as Redshift or Snowflake
 </details>
 
 <details>
 <summary>Familiarity</summary>
+
 - I happen to be an SQL expert who likes to write parsers
     - I have worked with many flavors of SQL in different settings. Suffice to say there is not a whole lot surprise left when it comes to SQL
     - I have written two previous machine language parsers. I can find my way around in this field
