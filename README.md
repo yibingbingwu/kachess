@@ -57,7 +57,7 @@ So the question really becomes how do you parse SQL?
 
 - [HiveParser](https://hive.apache.org/javadocs/r2.1.1/api/org/apache/hadoop/hive/ql/parse/HiveParser.html)
 - Uber Engineering's [QueryParser](https://github.com/uber/queryparser)
-- A few commercial options such as MANTA, General SQL Parser (GSP)
+- A few commercial options such as [MANTA](https://getmanta.com/), [General SQL Parser](http://www.sqlparser.com/)
 
 I chose to write my own, starting from BNF syntax description, for the following reasons:
 - Flexibility
@@ -65,5 +65,6 @@ I chose to write my own, starting from BNF syntax description, for the following
 
 </details>
 
+## Where does the project stand now
 ## How can I try it out  
 ## Future development
