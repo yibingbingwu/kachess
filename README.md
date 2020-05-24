@@ -52,10 +52,13 @@ Project Kachess is designed for Data Engineers working in a Data Warehouse like 
 </details>
 
 So the question really becomes how do you parse SQL?
-- Here are a few alternatives
-    - [HiveParser](https://hive.apache.org/javadocs/r2.1.1/api/org/apache/hadoop/hive/ql/parse/HiveParser.html)
-    - Uber Engineering's [QueryParser](https://github.com/uber/queryparser)
-    - A few commercial options such as [MANTA](https://getmanta.com/), [General SQL Parser](http://www.sqlparser.com/)
+<details> 
+<summary>Here are some alternatives</summary>
+
+- [HiveParser](https://hive.apache.org/javadocs/r2.1.1/api/org/apache/hadoop/hive/ql/parse/HiveParser.html)
+- Uber Engineering's [QueryParser](https://github.com/uber/queryparser)
+- A few commercial options such as [MANTA](https://getmanta.com/), [General SQL Parser](http://www.sqlparser.com/)
+</details>
 
 In the end, I chose to write my own, starting from BNF syntax description, for the following reasons:
 <details>
