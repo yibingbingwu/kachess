@@ -73,8 +73,8 @@ In the end, I chose to write my own, starting from BNF syntax description, for t
     - I have written two previous machine language parsers. I can find my way around in this field
 - Although it is challenging to write one syntax that supports multiple SQL dialects, I know this is achievable because:
     - I am only to extract lineage info, not to build an execution engine
-        - In other words, all I need to parse out from `INSERT INTO table_a AS SELECT * FROM table_b` is that `table_a` is a child of (or downstream from) `table_b`, not to orchestrate a Map/Reduce job
-        - Nor do I need to understand the plethora of platform-specific function (e.g. `date_add` vs. `adddate`): so long I can recognize something is a function, I can grab the parameters and map them to known columns
+        - In other words, all I need to parse out from `INSERT INTO table_a AS SELECT * FROM table_b` is that `table_a` is a child of (or downstream from) `table_b`. It is a lot simpler than having to orchestrate a Map/Reduce job
+        - I don't have to understand the plethora of platform-specific function (e.g. `date_add` vs. `adddate`): so long I can recognize something is a function and pick out the column names in the parameter list, it is good enough for me
     - At the end of the day, achieving a 90% lineage coverage of more than one SQL dialects in our code base is far more valuable then a 99.9% coverage of just one
 </details>
 
