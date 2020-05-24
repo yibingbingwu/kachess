@@ -14,7 +14,8 @@ Project Kachess is designed for Data Engineers working in a Data Warehouse like 
 - There is a constant need to refactor the foundational tables
 - There are business needs (e.g. regulatory, or contractual commitments) to discover data dependencies and/or to enforce access control
 
-To elaborate a big more:
+<details>
+    <summary>To elaborate a big more:</summary>
 - Project Kachess is inspired by my recent work at a popular software company where there was a lot of data users and SQL developers, but there was very few data engineers
     - Many people wrote SQL pipelines besides data engineers: data scientists, BI developers, software engineers, product managers, etc.
     - Most of them wrote pipelines to address their immediate needs, with a hope that one day, someday, a data engineer will take them over 
@@ -30,7 +31,7 @@ To elaborate a big more:
 - Similarly, there are other critical business needs are impacted by the chaos, for example
     - When you decided to move your data warehouse to a new platform, or when you have to make a data model change
     - When InfoSec team ask for access control audit
-  
+</details>  
 
 ## Why SQL parser
 
